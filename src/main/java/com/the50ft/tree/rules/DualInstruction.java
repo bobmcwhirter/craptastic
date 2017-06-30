@@ -1,8 +1,12 @@
 package com.the50ft.tree.rules;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.sun.tools.javac.comp.Check;
+import com.the50ft.tree.model.Aircraft;
+import com.the50ft.tree.model.Checkout;
 import com.the50ft.tree.model.Person;
 import com.the50ft.tree.resources.ResourceCatalog;
 import com.the50ft.tree.schedule.Schedules;
@@ -14,24 +18,29 @@ import org.kie.api.runtime.rule.RuleUnit;
  */
 public class DualInstruction implements RuleUnit {
 
-    public DualInstruction(Schedules schedules, ResourceCatalog catalog) {
-        //this.schedules = schedules.all().collect(Collectors.toList());
+    public DualInstruction(Person requestor, Schedules schedules, ResourceCatalog catalog, Collection<Checkout> checkouts) {
+        this.requestor = DataSource.create(requestor);
         this.persons = DataSource.create( catalog.of(Person.class).all().collect(Collectors.toList()).toArray( new Person[]{} ) );
-        //this.aircrafts = catalog.of(Aircraft.class).all().collect(Collectors.toList());
+        this.aircrafts = DataSource.create( catalog.of(Aircraft.class).all().collect(Collectors.toList()).toArray(new Aircraft[]{} ) );
+        this.checkouts = DataSource.create( checkouts.toArray( new Checkout[] {} ));
     }
 
-    //public DataSource<Schedule> getSchedules() {
-        //return DataSource.create( this.sch)
-    //}
+    public DataSource<Person> getRequestor() {
+        return this.requestor;
+    }
 
     public DataSource<Person> getPersons() {
         System.err.println( "get persons: " + this.persons );
         return this.persons;
     }
 
-    //public List<Aircraft> getAircrafts() {
-        //return this.aircrafts;
-    //}
+    public DataSource<Aircraft> getAircrafts() {
+        return this.aircrafts;
+    }
+
+    public DataSource<Checkout> getCheckouts() {
+        return this.checkouts;
+    }
 
     @Override
     public void onStart() {
@@ -44,4 +53,7 @@ public class DualInstruction implements RuleUnit {
     }
 
     private final DataSource<Person> persons;
+    private final DataSource<Aircraft> aircrafts;
+    private final DataSource<Checkout> checkouts;
+    private final DataSource<Person> requestor;
 }

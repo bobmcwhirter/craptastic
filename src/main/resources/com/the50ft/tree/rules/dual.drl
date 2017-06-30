@@ -13,9 +13,13 @@ global java.util.List list
 
 
 rule Available @Unit(DualInstruction.class) when
-  $instructor : /persons
+  $student : /requestor
+  $instructor : /persons[this!=$student]
+  $aircraft : /aircrafts
+  $student_checkout : /checkouts[aircraft==$aircraft && person==$student]
+  $instructor_checkout : /checkouts[aircraft==$aircraft && person==$instructor]
 then
-  System.out.println( "-->" + $instructor );
+  System.out.println( $student + "+" + $instructor + " @ " + $aircraft);
   //list.add( $instructor );
 end
 

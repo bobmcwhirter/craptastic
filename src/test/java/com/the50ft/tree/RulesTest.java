@@ -28,18 +28,27 @@ public class RulesTest {
         InMemoryResourceCatalog catalog = new InMemoryResourceCatalog();
 
         Person bob = new Person("bob");
-        catalog.add( Person.class, bob );
+        catalog.add(Person.class, bob);
         Person keith = new Person("keith");
-        catalog.add( Person.class, keith );
+        catalog.add(Person.class, keith);
+        Person al = new Person("al");
+        catalog.add(Person.class, al);
 
         Aircraft n9858g = new Aircraft("N9858G");
-        catalog.add( Aircraft.class, n9858g);
+        catalog.add(Aircraft.class, n9858g);
         Aircraft n666 = new Aircraft("N666");
-        catalog.add( Aircraft.class, n666 );
+        catalog.add(Aircraft.class, n666);
 
         Checkout c1 = new Checkout(bob, n9858g);
         Checkout c2 = new Checkout(keith, n9858g);
         Checkout c3 = new Checkout(keith, n666);
+        Checkout c4 = new Checkout(al, n9858g);
+
+        List<Checkout> checkouts = new ArrayList<>();
+        checkouts.add(c1);
+        checkouts.add(c2);
+        checkouts.add(c3);
+        checkouts.add(c4);
 
         Requestor requestor = new Requestor(bob);
 
@@ -53,10 +62,10 @@ public class RulesTest {
         RuleUnitExecutor executor = RuleUnitExecutor.create().bind(kBase);
         executor.bind(kBase);
         List list = new ArrayList();
-        executor.bindVariable("list", list );
-        executor.run( new DualInstruction(schedules, catalog));
+        executor.bindVariable("list", list);
+        executor.run(new DualInstruction(bob, schedules, catalog, checkouts));
 
-        System.err.println( "----- the list ---> " + list );
+        System.err.println("----- the list ---> " + list);
 
 
 
