@@ -16,7 +16,7 @@ public class DualInstruction implements RuleUnit {
 
     public DualInstruction(Schedules schedules, ResourceCatalog catalog) {
         //this.schedules = schedules.all().collect(Collectors.toList());
-        this.persons = catalog.of(Person.class).all().collect(Collectors.toList());
+        this.persons = DataSource.create( catalog.of(Person.class).all().collect(Collectors.toList()).toArray( new Person[]{} ) );
         //this.aircrafts = catalog.of(Aircraft.class).all().collect(Collectors.toList());
     }
 
@@ -26,7 +26,7 @@ public class DualInstruction implements RuleUnit {
 
     public DataSource<Person> getPersons() {
         System.err.println( "get persons: " + this.persons );
-        return DataSource.create(this.persons.toArray( new Person[] {} ));
+        return this.persons;
     }
 
     //public List<Aircraft> getAircrafts() {
@@ -43,5 +43,5 @@ public class DualInstruction implements RuleUnit {
         System.out.println("ended.");
     }
 
-    private final List<Person> persons;
+    private final DataSource<Person> persons;
 }

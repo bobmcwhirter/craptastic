@@ -16,6 +16,6 @@ rule Available @Unit(DualInstruction.class) when
   $instructor : /persons
 then
   System.out.println( "-->" + $instructor );
-  list.add( $instructor );
+  //list.add( $instructor );
 end
 
