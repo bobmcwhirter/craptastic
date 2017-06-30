@@ -1,0 +1,21 @@
+
+package com.the50ft.tree.rules
+
+import com.the50ft.tree.model.Person
+import com.the50ft.tree.model.Aircraft
+import com.the50ft.tree.model.Checkout
+import com.the50ft.tree.model.Requestor
+
+import com.the50ft.tree.rules.DualInstruction
+
+global java.io.PrintStream out
+global java.util.List list
+
+
+rule Available @Unit(DualInstruction.class) when
+  $instructor : /persons
+then
+  System.out.println( "-->" + $instructor );
+  list.add( $instructor );
+end
+
