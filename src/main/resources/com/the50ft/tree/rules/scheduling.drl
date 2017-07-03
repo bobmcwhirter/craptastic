@@ -1,0 +1,26 @@
+
+package com.the50ft.tree.rules
+
+unit OrganizationUnit
+
+import com.the50ft.tree.model.Person
+import com.the50ft.tree.model.Aircraft
+import com.the50ft.tree.model.Checkout
+import com.the50ft.tree.model.Request
+
+import com.the50ft.tree.rules.OrganizationUnit
+
+global java.io.PrintStream out
+global java.util.List list
+
+
+rule Available when
+  $request : /requests
+  $instructor : /persons[this != $request.person]
+  $aircraft : /aircrafts
+  $student_checkout : /checkouts[aircraft==$aircraft && person==$request.person]
+  $instructor_checkout : /checkouts[aircraft==$aircraft && person==$instructor]
+then
+  System.out.println( $request.getPerson() + "+" + $instructor + " @ " + $aircraft);
+end
+

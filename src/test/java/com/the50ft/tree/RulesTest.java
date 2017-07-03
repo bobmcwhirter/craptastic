@@ -1,20 +1,16 @@
 package com.the50ft.tree;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import com.the50ft.tree.model.Aircraft;
 import com.the50ft.tree.model.Checkout;
 import com.the50ft.tree.model.Person;
-import com.the50ft.tree.model.Requestor;
-import com.the50ft.tree.resources.memory.InMemoryResourceCatalog;
-import com.the50ft.tree.rules.DualInstruction;
-import com.the50ft.tree.schedule.memory.InMemorySchedules;
+import com.the50ft.tree.model.Request;
+import com.the50ft.tree.rules.OrganizationUnit;
 import org.junit.Test;
 import org.kie.api.KieBase;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
-import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.RuleUnitExecutor;
 
 /**
@@ -25,65 +21,51 @@ public class RulesTest {
     @Test
     public void testMatch() throws InterruptedException {
 
-        InMemoryResourceCatalog catalog = new InMemoryResourceCatalog();
+        OrganizationUnit unit = new OrganizationUnit();
 
         Person bob = new Person("bob");
-        catalog.add(Person.class, bob);
+        unit.insertPerson(bob);
         Person keith = new Person("keith");
-        catalog.add(Person.class, keith);
+        unit.insertPerson(keith);
         Person al = new Person("al");
-        catalog.add(Person.class, al);
+        unit.insertPerson(al);
 
         Aircraft n9858g = new Aircraft("N9858G");
-        catalog.add(Aircraft.class, n9858g);
+        unit.insertAircraft(n9858g);
         Aircraft n666 = new Aircraft("N666");
-        catalog.add(Aircraft.class, n666);
+        unit.insertAircraft(n666);
 
         Checkout c1 = new Checkout(bob, n9858g);
+        unit.insertCheckout(c1);
         Checkout c2 = new Checkout(keith, n9858g);
+        unit.insertCheckout(c2);
         Checkout c3 = new Checkout(keith, n666);
+        unit.insertCheckout(c3);
         Checkout c4 = new Checkout(al, n9858g);
+        unit.insertCheckout(c4);
 
-        List<Checkout> checkouts = new ArrayList<>();
-        checkouts.add(c1);
-        checkouts.add(c2);
-        checkouts.add(c3);
-        checkouts.add(c4);
-
-        Requestor requestor = new Requestor(bob);
-
-        InMemorySchedules schedules = new InMemorySchedules();
 
         KieServices ks = KieServices.Factory.get();
         KieContainer kContainer = ks.getKieClasspathContainer();
-
         KieBase kBase = kContainer.getKieBase();
 
         RuleUnitExecutor executor = RuleUnitExecutor.create().bind(kBase);
         executor.bind(kBase);
-        List list = new ArrayList();
-        executor.bindVariable("list", list);
-        executor.run(new DualInstruction(bob, schedules, catalog, checkouts));
 
-        System.err.println("----- the list ---> " + list);
+        Thread thread = new Thread(() -> {
+            System.err.println( "running" );
+            executor.runUntilHalt(unit);
+        });
 
+        thread.start();
 
+        System.err.println( "insert");
+        unit.insertRequest(new Request(bob));
+        System.err.println( "inserted");
 
-        /*
-        KieSession kSession = kContainer.newKieSession();
+        Thread.sleep(5000);
 
-        kSession.setGlobal("out", System.out);
-        kSession.insert(requestor);
-        kSession.insert(bob);
-        kSession.insert(keith);
-        kSession.insert(n9858g);
-        kSession.insert(n666);
-        kSession.insert(c1);
-        kSession.insert(c2);
-        kSession.insert(c3);
-        kSession.fireAllRules();
-        */
-
+        //executor.run(unit);
 
     }
 }

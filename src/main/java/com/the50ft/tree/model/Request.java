@@ -3,9 +3,9 @@ package com.the50ft.tree.model;
 /**
  * Created by bob on 6/30/17.
  */
-public class Requestor {
+public class Request {
 
-    public Requestor(Person person) {
+    public Request(Person person) {
         this.person = person;
     }
 
